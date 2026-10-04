@@ -1,3 +1,14 @@
-Nom : Chatbot Freelance
-Services : éclairage routier, portuaire, solaire, TGBT, schémas, CCTP/BPU/DQE
-Déploiement : GitHub Pages
+KIRANA INGÉNIERIE
+Concevoir l’énergie • Éclairer l’avenir
+
+Assistant : KIRANA AI
+Email : contact@kirana-ingenierie.mg (à remplacer par votre adresse réelle)
+WhatsApp : +261 XX XX XXX XX (à remplacer)
+
+Services :
+- Éclairage routier
+- Éclairage portuaire
+- Énergie solaire
+- TGBT / distribution
+- Schémas électriques
+- CCTP / BPU / DQE

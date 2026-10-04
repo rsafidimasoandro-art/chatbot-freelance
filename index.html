@@ -1,62 +1,173 @@
 <!doctype html>
-<html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Assistant Freelance – Études électriques</title>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>KIRANA AI — KIRANA INGÉNIERIE</title>
+<meta name="description" content="KIRANA AI — assistant technique et commercial de KIRANA INGÉNIERIE.">
 <style>
-body{font-family:Arial;margin:0;background:#f4f7fb;color:#102033}.app{max-width:1000px;margin:auto;padding:18px}
-header{background:#075985;color:white;padding:22px;border-radius:16px}h1{margin:0 0 6px;font-size:25px}
-.grid{display:grid;grid-template-columns:1.7fr .8fr;gap:16px;margin-top:16px}.card{background:white;border:1px solid #dbe4ee;border-radius:16px}
-.chat{min-height:620px;display:flex;flex-direction:column}.messages{padding:18px;flex:1;overflow:auto}.msg{margin:9px 0;display:flex}.msg.user{justify-content:flex-end}
-.bubble{padding:11px 14px;border-radius:14px;max-width:82%;white-space:pre-wrap}.bot .bubble{background:#edf6fb}.user .bubble{background:#075985;color:white}
-.quick{display:flex;gap:7px;flex-wrap:wrap;padding:10px 18px}.quick button,button{padding:10px 12px;border:1px solid #ccd8e3;border-radius:9px;background:white;cursor:pointer}
-.composer{display:flex;gap:8px;padding:12px;border-top:1px solid #ddd}.composer input{flex:1;padding:12px;border:1px solid #ccd8e3;border-radius:9px}
-.primary{background:#075985!important;color:white!important}.side{padding:18px}.service{padding:10px;border:1px solid #ddd;border-radius:10px;margin:8px 0}
-.panel{display:none;padding:18px}.panel.active{display:block}.form{display:grid;gap:10px}.form input,.form select,.form textarea{padding:11px;border:1px solid #ccd8e3;border-radius:8px;font:inherit}.form textarea{min-height:100px}
-nav{margin-top:12px;display:flex;gap:8px;flex-wrap:wrap}@media(max-width:750px){.grid{grid-template-columns:1fr}.side{display:none}}
-</style></head>
-<body><div class="app">
-<header><h1>Assistant Freelance – Études électriques</h1>
-<p>Éclairage routier et portuaire • solaire • TGBT • schémas • CCTP/BPU/DQE</p>
-<nav><button onclick="panel('chat')">💬 Assistant</button><button onclick="panel('quote')">📋 Demander un devis</button><button onclick="panel('leads')">📊 Prospects</button></nav></header>
-<div class="grid"><section class="card">
-<div id="chat" class="panel active"><div id="messages" class="messages"></div><div id="quick" class="quick"></div>
-<div class="composer"><input id="input" placeholder="Écrivez votre demande..."><button class="primary" onclick="send()">Envoyer</button></div></div>
-<div id="quote" class="panel"><h2>Demande de devis</h2><form id="form" class="form">
-<input id="name" placeholder="Nom / entreprise *" required><input id="email" type="email" placeholder="E-mail *" required>
-<input id="phone" placeholder="Téléphone / WhatsApp"><select id="project" required><option value="">Type de projet *</option><option>Éclairage routier</option><option>Éclairage portuaire</option><option>Installation solaire</option><option>TGBT / distribution</option><option>Schéma électrique</option><option>CCTP / BPU / DQE</option><option>Autre</option></select>
-<input id="location" placeholder="Localisation du projet"><textarea id="details" placeholder="Description du besoin, dimensions, puissance, délai..."></textarea>
-<button class="primary" type="submit">Enregistrer la demande</button><div id="status"></div></form></div>
-<div id="leads" class="panel"><h2>Prospects</h2><button class="primary" onclick="csv()">⬇ Exporter CSV</button> <button onclick="clearAll()">Supprimer</button><div id="list"></div></div>
+:root{--navy:#073b66;--blue:#0b5fa5;--green:#16a085;--yellow:#f2b705;--bg:#f4f8fb;--ink:#12344d;--muted:#64798a;--white:#fff;--line:#dce8ef;--danger:#b42318}
+*{box-sizing:border-box}body{margin:0;font-family:Arial,Helvetica,sans-serif;background:var(--bg);color:var(--ink)}
+button,input,select,textarea{font:inherit}button{cursor:pointer}
+.top{background:linear-gradient(110deg,#fff 0 35%,#0a5a8f 35% 100%);min-height:125px;padding:18px 28px;display:flex;align-items:center;justify-content:space-between;color:#fff}
+.brand{display:flex;align-items:center;gap:15px}.logo{width:82px;height:82px}.brand h1{margin:0;color:var(--navy);font-size:34px;letter-spacing:2px}.brand p{margin:4px 0 0;color:var(--green);font-weight:700;letter-spacing:1px}
+.top .tag{font-size:15px;text-align:right;max-width:410px;line-height:1.5}
+.layout{display:grid;grid-template-columns:235px 1fr 310px;min-height:calc(100vh - 125px)}
+.sidebar{background:#063c67;color:#fff;padding:18px 12px;display:flex;flex-direction:column}
+.nav button{width:100%;padding:13px 14px;margin:4px 0;border:0;border-radius:10px;background:transparent;color:#fff;text-align:left}.nav button:hover,.nav button.active{background:#145b8c}
+.sidebox{margin-top:auto;background:#0b5a88;border-radius:14px;padding:15px;font-size:13px;line-height:1.5}
+.main{padding:20px;min-width:0}.panel{background:#fff;border:1px solid var(--line);border-radius:16px;box-shadow:0 5px 20px #073b6610}
+.chat-head{padding:17px 20px;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;align-items:center}.chat-head h2{margin:0;font-size:22px}.online{color:#15803d;font-weight:700;font-size:13px}.chat{height:430px;overflow:auto;padding:20px;background:linear-gradient(#fff,#f8fbfd)}.msg{max-width:84%;padding:13px 16px;border-radius:14px;margin:10px 0;line-height:1.5;white-space:pre-wrap}.bot{background:#edf6fb}.user{background:#0b5fa5;color:#fff;margin-left:auto}.chips{display:flex;flex-wrap:wrap;gap:8px;padding:15px 20px;border-top:1px solid var(--line)}.chips button{border:1px solid #cfe0ea;background:#fff;border-radius:20px;padding:9px 13px;color:var(--navy)}.composer{display:flex;gap:8px;padding:12px 15px;border-top:1px solid var(--line)}.composer input{flex:1;border:1px solid #c9dbe5;border-radius:12px;padding:12px}.send{border:0;background:var(--blue);color:#fff;border-radius:12px;padding:0 18px}
+.cards{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;padding:16px}.service{border:1px solid var(--line);border-radius:12px;padding:14px;background:#fff}.service b{display:block;margin-bottom:5px}.service span{font-size:13px;color:var(--muted)}
+.right{padding:20px 18px 20px 0}.right h3{margin:0 0 12px}.service-list{display:grid;gap:10px}.service-card{background:#fff;border:1px solid var(--line);border-radius:13px;padding:13px}.service-card strong{display:block;margin-bottom:4px}.service-card small{color:var(--muted)}.cta{margin-top:15px;background:#063c67;color:#fff;border-radius:15px;padding:18px}.cta button{width:100%;border:0;background:#35c759;color:#fff;border-radius:10px;padding:11px;font-weight:700}
+.modal{position:fixed;inset:0;background:#001c2b99;display:none;align-items:center;justify-content:center;padding:20px;z-index:10}.modal.show{display:flex}.dialog{background:#fff;border-radius:18px;width:min(720px,100%);max-height:92vh;overflow:auto;padding:24px}.dialog h2{margin-top:0}.grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}.field{display:flex;flex-direction:column;gap:5px;margin-bottom:10px}.field.full{grid-column:1/-1}.field input,.field select,.field textarea{border:1px solid #cbdde7;border-radius:9px;padding:10px}.field textarea{min-height:100px;resize:vertical}.actions{display:flex;justify-content:flex-end;gap:8px}.btn{border:0;border-radius:9px;padding:10px 15px}.primary{background:var(--blue);color:#fff}.secondary{background:#eef4f7;color:var(--ink)}.danger{color:var(--danger)}
+.section{display:none}.section.show{display:block}.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:15px}.stat{background:#fff;border:1px solid var(--line);border-radius:14px;padding:16px}.stat strong{font-size:28px;display:block}.lead{background:#fff;border:1px solid var(--line);border-radius:12px;padding:13px;margin:8px 0}.lead small{color:var(--muted)}.empty{padding:30px;text-align:center;color:var(--muted)}
+.footer{padding:16px 20px;background:#052f50;color:#fff;font-size:12px;display:flex;justify-content:space-between}
+@media(max-width:1050px){.layout{grid-template-columns:190px 1fr}.right{display:none}.cards{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:720px){.top{background:#fff;min-height:100px;padding:12px 15px}.top .tag{display:none}.brand h1{font-size:26px}.layout{display:block}.sidebar{padding:8px;position:sticky;top:0;z-index:5}.nav{display:flex;overflow:auto}.nav button{min-width:max-content}.sidebox{display:none}.main{padding:10px}.chat{height:390px}.cards{grid-template-columns:1fr}.grid{grid-template-columns:1fr}.field.full{grid-column:auto}.footer{display:block}}
+</style>
+</head>
+<body>
+<header class="top">
+  <div class="brand">
+    <svg class="logo" viewBox="0 0 180 180" aria-label="Logo KIRANA">
+      <circle cx="90" cy="90" r="76" fill="none" stroke="#16a085" stroke-width="10"/>
+      <path d="M42 48L72 130L92 91L112 130L142 48" fill="none" stroke="#0b5fa5" stroke-width="15" stroke-linecap="round" stroke-linejoin="round"/>
+      <path d="M105 25L82 78H103L89 151L128 78H107Z" fill="#f2b705"/>
+    </svg>
+    <div><h1>KIRANA</h1><p>INGÉNIERIE</p></div>
+  </div>
+  <div class="tag"><b>Concevoir l’énergie • Éclairer l’avenir</b><br>KIRANA AI — Votre assistant technique & commercial</div>
+</header>
+
+<div class="layout">
+<aside class="sidebar">
+  <nav class="nav">
+    <button class="active" data-section="accueil">🏠 Accueil</button>
+    <button data-section="services">⚡ Nos services</button>
+    <button id="quoteBtn">📝 Demander un devis</button>
+    <button data-section="prospects">📊 Prospects</button>
+    <button data-section="about">🏢 À propos</button>
+  </nav>
+  <div class="sidebox">
+    <b>🇲🇬 KIRANA INGÉNIERIE</b><br>
+    Bureau d’études — Électricité • Énergie • Éclairage<br><br>
+    <b>Contact</b><br>
+    WhatsApp : +261 XX XX XXX XX<br>
+    Email : contact@kirana-ingenierie.mg
+  </div>
+</aside>
+
+<main class="main">
+<section id="accueil" class="section show">
+<div class="panel">
+  <div class="chat-head"><div><h2>🤖 KIRANA AI</h2><small>Assistant technique & commercial</small></div><div class="online">● En ligne</div></div>
+  <div id="chat" class="chat"></div>
+  <div id="chips" class="chips"></div>
+  <div class="composer"><input id="message" placeholder="Écrivez votre message..." autocomplete="off"><button class="send" id="send">➤</button></div>
+</div>
+<div class="panel cards">
+  <div class="service"><b>💡 Éclairage routier</b><span>Études, dimensionnement, DIALux, installation.</span></div>
+  <div class="service"><b>⚓ Éclairage portuaire</b><span>Quais, terminaux, zones industrielles.</span></div>
+  <div class="service"><b>☀️ Solaire</b><span>Autonome, hybride et optimisation énergétique.</span></div>
+  <div class="service"><b>🔌 TGBT & distribution</b><span>Tableaux, protections, réseaux BT/HTA.</span></div>
+  <div class="service"><b>📐 Schémas électriques</b><span>Unifilaire, multifilaire, plans DXF/PDF.</span></div>
+  <div class="service"><b>📄 CCTP / BPU / DQE</b><span>Dossiers techniques et estimatifs.</span></div>
+</div>
 </section>
-<aside class="card side"><h2>Services</h2>
-<div class="service"><b>💡 Éclairage routier</b><br>Étude, implantation, LED, DIALux.</div>
-<div class="service"><b>⚓ Éclairage portuaire</b><br>Quais, mâts, projecteurs.</div>
-<div class="service"><b>☀️ Solaire</b><br>Dimensionnement et autonomie.</div>
-<div class="service"><b>⚡ TGBT</b><br>Bilan, protections, départs.</div>
-<div class="service"><b>📐 Schémas</b><br>Unifilaire et multifilaire.</div>
-<div class="service"><b>📑 CCTP/BPU/DQE</b><br>Dossiers techniques et estimatifs.</div>
-</aside></div></div>
+
+<section id="services" class="section">
+<div class="panel" style="padding:22px"><h2>Nos services</h2><p>Des études techniques adaptées aux projets publics, privés, industriels, portuaires et énergétiques à Madagascar.</p>
+<div class="cards" style="padding:0">
+<div class="service"><b>💡 Éclairage routier</b><span>Calculs d’éclairement, implantation, puissance LED, DIALux et dossiers d’exécution.</span></div>
+<div class="service"><b>⚓ Éclairage portuaire</b><span>Quais, terre-pleins, terminaux, mâts et projecteurs LED.</span></div>
+<div class="service"><b>☀️ Énergie solaire</b><span>Autonome, hybride, batteries, production et dimensionnement.</span></div>
+<div class="service"><b>🔌 TGBT & distribution</b><span>Bilan de puissance, protections, câbles, schémas et tableaux.</span></div>
+<div class="service"><b>📐 Schémas électriques</b><span>Unifilaires, multifilaires, plans et nomenclatures.</span></div>
+<div class="service"><b>📄 CCTP / BPU / DQE</b><span>Pièces techniques et financières pour consultation et travaux.</span></div>
+</div></div>
+</section>
+
+<section id="prospects" class="section">
+<div class="stats"><div class="stat"><small>Prospects enregistrés</small><strong id="countLeads">0</strong></div><div class="stat"><small>Demandes de devis</small><strong id="countQuotes">0</strong></div><div class="stat"><small>Dernière demande</small><strong id="lastLead">—</strong></div></div>
+<div class="panel" style="padding:18px"><div style="display:flex;justify-content:space-between;gap:10px;align-items:center"><h2>Tableau des prospects</h2><button class="btn secondary" id="export">Exporter CSV</button></div><div id="leadList"></div></div>
+</section>
+
+<section id="about" class="section">
+<div class="panel" style="padding:24px"><h2>KIRANA INGÉNIERIE</h2><p><b>Concevoir l’énergie • Éclairer l’avenir</b></p>
+<p>KIRANA INGÉNIERIE accompagne les maîtres d’ouvrage, entreprises et porteurs de projets dans les études électriques, énergétiques et d’éclairage.</p>
+<ul><li>Ingénierie électrique et distribution</li><li>Éclairage routier et portuaire</li><li>Énergie solaire et systèmes hybrides</li><li>Schémas et dossiers techniques</li><li>CCTP, BPU et DQE</li></ul>
+<p><b>KIRANA AI</b> qualifie les demandes, collecte les informations du projet et facilite la prise de contact avec l’équipe.</p></div>
+</section>
+</main>
+
+<aside class="right">
+<h3>Nos principaux services</h3>
+<div class="service-list">
+<div class="service-card"><strong>💡 Éclairage routier</strong><small>Routes, villes, zones industrielles</small></div>
+<div class="service-card"><strong>⚓ Éclairage portuaire</strong><small>Quais, terminaux et terre-pleins</small></div>
+<div class="service-card"><strong>☀️ Énergie solaire</strong><small>Autonome ou hybride</small></div>
+<div class="service-card"><strong>🔌 TGBT & distribution</strong><small>Tableaux, protections, réseaux</small></div>
+<div class="service-card"><strong>📐 Schémas électriques</strong><small>Unifilaire, multifilaire, plans</small></div>
+<div class="service-card"><strong>📄 CCTP / BPU / DQE</strong><small>Dossiers techniques et estimatifs</small></div>
+</div>
+<div class="cta"><b>Vous avez un projet ?</b><p style="margin:7px 0 13px">Demandez une étude ou un devis.</p><button onclick="openQuote()">🟢 Demander un devis</button></div>
+</aside>
+</div>
+
+<footer class="footer"><span>KIRANA INGÉNIERIE — Concevoir l’énergie • Éclairer l’avenir</span><span>Version V1 • Assistant KIRANA AI</span></footer>
+
+<div class="modal" id="modal">
+<div class="dialog">
+<h2>📝 Demander un devis</h2>
+<p style="color:#64798a">Décrivez votre projet. Les informations sont enregistrées localement dans ce navigateur.</p>
+<form id="quoteForm">
+<div class="grid">
+<div class="field"><label>Nom / entreprise *</label><input name="name" required></div>
+<div class="field"><label>Téléphone / WhatsApp *</label><input name="phone" required></div>
+<div class="field"><label>Email</label><input type="email" name="email"></div>
+<div class="field"><label>Ville / région</label><input name="location" placeholder="Ex. Toliara"></div>
+<div class="field"><label>Type de projet *</label><select name="project" required><option value="">Sélectionner</option><option>Éclairage routier</option><option>Éclairage portuaire</option><option>Solaire</option><option>TGBT / distribution</option><option>Schémas électriques</option><option>CCTP / BPU / DQE</option><option>Autre</option></select></div>
+<div class="field"><label>Budget indicatif</label><select name="budget"><option>À définir</option><option>&lt; 10 M MGA</option><option>10–50 M MGA</option><option>50–200 M MGA</option><option>&gt; 200 M MGA</option></select></div>
+<div class="field full"><label>Description du besoin *</label><textarea name="details" required placeholder="Dimensions, puissance, longueur, nombre d'équipements, délai souhaité..."></textarea></div>
+<div class="field"><label>Délai souhaité</label><input name="deadline" placeholder="Ex. 2 semaines"></div>
+<div class="field"><label>Source</label><select name="source"><option>Site web</option><option>WhatsApp</option><option>Recommandation</option><option>Autre</option></select></div>
+</div>
+<div class="actions"><button type="button" class="btn secondary" onclick="closeQuote()">Annuler</button><button class="btn primary">Enregistrer la demande</button></div>
+</form>
+</div>
+</div>
+
 <script>
-const KEY="freelance_leads_v4";let leads=JSON.parse(localStorage.getItem(KEY)||"[]");
-const M=document.getElementById("messages"),Q=document.getElementById("quick"),I=document.getElementById("input");
-function add(t,u=false){let d=document.createElement("div");d.className="msg "+(u?"user":"bot");let b=document.createElement("div");b.className="bubble";b.textContent=t;d.appendChild(b);M.appendChild(d);M.scrollTop=M.scrollHeight}
-function buttons(a){Q.innerHTML="";a.forEach(x=>{let b=document.createElement("button");b.textContent=x;b.onclick=()=>{I.value=x;send()};Q.appendChild(b)})}
-function panel(id){document.querySelectorAll(".panel").forEach(x=>x.classList.remove("active"));document.getElementById(id).classList.add("active");if(id==="leads")render()}
-function reply(q){let s=q.toLowerCase();
-if(s.includes("devis")||s.includes("prix")||s.includes("coût")){panel("quote");return "Je vous invite à remplir le formulaire de demande de devis. Indiquez les informations que vous connaissez."; }
-if(s.includes("routier")||s.includes("route"))return "Pour l’éclairage routier : longueur, largeur, niveau de lux, espacement des mâts et alimentation permettent de dimensionner l’installation. Je peux aussi préparer CCTP/BPU/DQE.";
-if(s.includes("port"))return "Pour l’éclairage portuaire : quais, terre-pleins, mâts, projecteurs LED, TGBT et protections peuvent être étudiés.";
-if(s.includes("solaire"))return "Pour le solaire : puissance de charge, durée de fonctionnement et autonomie souhaitée servent au dimensionnement des panneaux et batteries.";
-if(s.includes("tgbt")||s.includes("distribution"))return "Pour un TGBT : puissance disponible, bilan des charges et liste des départs permettent de définir protections, câbles et schéma unifilaire.";
-if(s.includes("schéma")||s.includes("schema"))return "Je peux préparer un schéma unifilaire ou multifilaire. Donnez les équipements, puissances et départs.";
-if(s.includes("cctp")||s.includes("bpu")||s.includes("dqe"))return "Je peux préparer CCTP, BPU et DQE détaillés avec quantités, définitions et estimation.";
-return "Je peux vous aider pour l’éclairage routier, l’éclairage portuaire, le solaire, le TGBT, les schémas électriques ou les dossiers CCTP/BPU/DQE. Quel est votre projet ?"}
-function send(){let q=I.value.trim();if(!q)return;add(q,true);I.value="";setTimeout(()=>add(reply(q)),120)}
-I.addEventListener("keydown",e=>{if(e.key==="Enter")send()});
-document.getElementById("form").onsubmit=e=>{e.preventDefault();let x={date:new Date().toLocaleString("fr-FR"),name:name.value,email:email.value,phone:phone.value,project:project.value,location:location.value,details:details.value};leads.push(x);localStorage.setItem(KEY,JSON.stringify(leads));status.textContent="✓ Demande enregistrée sur cet appareil.";e.target.reset()};
-function render(){list.innerHTML=leads.length?leads.slice().reverse().map(x=>"<p><b>"+esc(x.name)+"</b> — "+esc(x.project)+"<br>"+esc(x.email)+" • "+esc(x.phone)+"<br>"+esc(x.location)+"<br>"+esc(x.details)+"</p>").join(""):"<p>Aucun prospect.</p>"}
-function esc(x){return String(x||"").replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]))}
-function csv(){if(!leads.length)return alert("Aucun prospect.");let r=[["Date","Nom","Email","Téléphone","Projet","Localisation","Détails"],...leads.map(x=>Object.values(x))];let c=r.map(a=>a.map(v=>'"'+String(v||"").replaceAll('"','""')+'"').join(";")).join("\n"),b=new Blob(["\ufeff"+c],{type:"text/csv"}),a=document.createElement("a");a.href=URL.createObjectURL(b);a.download="prospects.csv";a.click()}
-function clearAll(){if(confirm("Supprimer tous les prospects ?")){leads=[];localStorage.removeItem(KEY);render()}}
-add("Bonjour ! Je suis l’assistant de votre activité freelance en études électriques. Je peux orienter vos clients vers une étude, un devis ou un dossier technique. Quel est votre besoin ?");
-buttons(["Éclairage routier","Éclairage portuaire","Installation solaire","TGBT / distribution","Schéma électrique","CCTP / BPU / DQE","Demander un devis"]);
-</script></body></html>
+const KEY="kirana_leads_v1";
+const chat=document.getElementById("chat"), chips=document.getElementById("chips"), input=document.getElementById("message");
+const services=["Éclairage routier","Éclairage portuaire","Solaire","TGBT / distribution","Schémas électriques","CCTP / BPU / DQE"];
+
+function addMsg(text,who="bot"){const d=document.createElement("div");d.className="msg "+who;d.textContent=text;chat.appendChild(d);chat.scrollTop=chat.scrollHeight}
+function showChips(items){chips.innerHTML="";items.forEach(x=>{const b=document.createElement("button");b.textContent=x;b.onclick=()=>{if(x==="Demander un devis")openQuote();else{input.value=x;sendMsg()}};chips.appendChild(b)})}
+function welcome(){chat.innerHTML="";addMsg("Bonjour 👋\\nJe suis KIRANA AI, l’assistant de KIRANA INGÉNIERIE.\\n\\nJe peux vous aider à :\\n• découvrir nos services ;\\n• préciser votre besoin ;\\n• demander un devis ;\\n• préparer les informations pour notre équipe.\\n\\nQuel est votre besoin aujourd’hui ?");showChips([...services,"Demander un devis"])}
+function sendMsg(){const v=input.value.trim();if(!v)return;addMsg(v,"user");input.value="";setTimeout(()=>reply(v),250)}
+function reply(v){
+ const s=v.toLowerCase();
+ if(s.includes("devis")||s.includes("prix")||s.includes("coût")||s.includes("cout")){addMsg("Bien sûr. Pour préparer une demande de devis utile, j’ai besoin de quelques informations sur votre projet. Cliquez sur « Demander un devis ».");showChips(["Demander un devis"]);return}
+ let found=services.find(x=>s.includes(x.toLowerCase().split(" ")[0]));
+ if(found){addMsg("Pour "+found+", KIRANA INGÉNIERIE peut réaliser l’étude, le dimensionnement et les documents techniques adaptés au projet.\\n\\nPour une réponse précise, indiquez les dimensions du site, la puissance ou quantité d’équipements connue, la localisation et le délai souhaité.");showChips(["Demander un devis","Retour aux services"]);return}
+ if(s.includes("bonjour")||s.includes("salut")){addMsg("Bonjour ! 👋 Comment puis-je vous aider ?");showChips([...services,"Demander un devis"]);return}
+ addMsg("Merci pour votre message. Pour que notre équipe puisse analyser votre demande, le plus simple est de remplir le formulaire de devis avec les dimensions, puissances, quantités et localisation du projet.");showChips(["Demander un devis","Nos services"])
+}
+document.getElementById("send").onclick=sendMsg;input.addEventListener("keydown",e=>{if(e.key==="Enter")sendMsg()});
+document.querySelectorAll("[data-section]").forEach(b=>b.onclick=()=>showSection(b.dataset.section));
+function showSection(id){document.querySelectorAll(".section").forEach(s=>s.classList.remove("show"));document.getElementById(id).classList.add("show");document.querySelectorAll(".nav button").forEach(x=>x.classList.remove("active"));document.querySelector('[data-section="'+id+'"]')?.classList.add("active");if(id==="prospects")renderLeads()}
+function getLeads(){try{return JSON.parse(localStorage.getItem(KEY)||"[]")}catch(e){return[]}}
+function saveLead(data){const leads=getLeads();leads.unshift({...data,id:Date.now(),createdAt:new Date().toISOString()});localStorage.setItem(KEY,JSON.stringify(leads));return leads[0]}
+function openQuote(){document.getElementById("modal").classList.add("show")}
+function closeQuote(){document.getElementById("modal").classList.remove("show")}
+document.getElementById("quoteBtn").onclick=openQuote;
+document.getElementById("quoteForm").onsubmit=e=>{e.preventDefault();const data=Object.fromEntries(new FormData(e.target).entries());saveLead(data);e.target.reset();closeQuote();alert("Merci ! Votre demande a été enregistrée. L’équipe KIRANA INGÉNIERIE pourra reprendre contact avec vous.");renderLeads();showSection("prospects")}
+function renderLeads(){const leads=getLeads();document.getElementById("countLeads").textContent=leads.length;document.getElementById("countQuotes").textContent=leads.length;document.getElementById("lastLead").textContent=leads[0]?new Date(leads[0].createdAt).toLocaleDateString("fr-FR"):"—";const box=document.getElementById("leadList");if(!leads.length){box.innerHTML='<div class="empty">Aucun prospect enregistré.</div>';return}box.innerHTML=leads.map((l,i)=>`<div class="lead"><b>${esc(l.name)}</b> — ${esc(l.project)}<br><small>${esc(l.phone)}${l.email?" • "+esc(l.email):""} • ${new Date(l.createdAt).toLocaleString("fr-FR")}</small><p>${esc(l.details)}</p><small>${esc(l.location||"Localisation non précisée")} • Budget : ${esc(l.budget||"À définir")}</small></div>`).join("")}
+function esc(x){return String(x||"").replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[m]))}
+document.getElementById("export").onclick=()=>{const leads=getLeads();if(!leads.length){alert("Aucun prospect à exporter.");return}const cols=["createdAt","name","phone","email","location","project","budget","details","deadline","source"];const csv=[cols.join(";"),...leads.map(l=>cols.map(c=>`"${String(l[c]||"").replace(/"/g,'""')}"`).join(";"))].join("\\n");const blob=new Blob(["\\ufeff"+csv],{type:"text/csv;charset=utf-8"});const a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download="kirana_prospects.csv";a.click();URL.revokeObjectURL(a.href)}
+welcome();
+</script>
+</body>
+</html>
