@@ -1,0 +1,62 @@
+<!doctype html>
+<html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Assistant Freelance – Études électriques</title>
+<style>
+body{font-family:Arial;margin:0;background:#f4f7fb;color:#102033}.app{max-width:1000px;margin:auto;padding:18px}
+header{background:#075985;color:white;padding:22px;border-radius:16px}h1{margin:0 0 6px;font-size:25px}
+.grid{display:grid;grid-template-columns:1.7fr .8fr;gap:16px;margin-top:16px}.card{background:white;border:1px solid #dbe4ee;border-radius:16px}
+.chat{min-height:620px;display:flex;flex-direction:column}.messages{padding:18px;flex:1;overflow:auto}.msg{margin:9px 0;display:flex}.msg.user{justify-content:flex-end}
+.bubble{padding:11px 14px;border-radius:14px;max-width:82%;white-space:pre-wrap}.bot .bubble{background:#edf6fb}.user .bubble{background:#075985;color:white}
+.quick{display:flex;gap:7px;flex-wrap:wrap;padding:10px 18px}.quick button,button{padding:10px 12px;border:1px solid #ccd8e3;border-radius:9px;background:white;cursor:pointer}
+.composer{display:flex;gap:8px;padding:12px;border-top:1px solid #ddd}.composer input{flex:1;padding:12px;border:1px solid #ccd8e3;border-radius:9px}
+.primary{background:#075985!important;color:white!important}.side{padding:18px}.service{padding:10px;border:1px solid #ddd;border-radius:10px;margin:8px 0}
+.panel{display:none;padding:18px}.panel.active{display:block}.form{display:grid;gap:10px}.form input,.form select,.form textarea{padding:11px;border:1px solid #ccd8e3;border-radius:8px;font:inherit}.form textarea{min-height:100px}
+nav{margin-top:12px;display:flex;gap:8px;flex-wrap:wrap}@media(max-width:750px){.grid{grid-template-columns:1fr}.side{display:none}}
+</style></head>
+<body><div class="app">
+<header><h1>Assistant Freelance – Études électriques</h1>
+<p>Éclairage routier et portuaire • solaire • TGBT • schémas • CCTP/BPU/DQE</p>
+<nav><button onclick="panel('chat')">💬 Assistant</button><button onclick="panel('quote')">📋 Demander un devis</button><button onclick="panel('leads')">📊 Prospects</button></nav></header>
+<div class="grid"><section class="card">
+<div id="chat" class="panel active"><div id="messages" class="messages"></div><div id="quick" class="quick"></div>
+<div class="composer"><input id="input" placeholder="Écrivez votre demande..."><button class="primary" onclick="send()">Envoyer</button></div></div>
+<div id="quote" class="panel"><h2>Demande de devis</h2><form id="form" class="form">
+<input id="name" placeholder="Nom / entreprise *" required><input id="email" type="email" placeholder="E-mail *" required>
+<input id="phone" placeholder="Téléphone / WhatsApp"><select id="project" required><option value="">Type de projet *</option><option>Éclairage routier</option><option>Éclairage portuaire</option><option>Installation solaire</option><option>TGBT / distribution</option><option>Schéma électrique</option><option>CCTP / BPU / DQE</option><option>Autre</option></select>
+<input id="location" placeholder="Localisation du projet"><textarea id="details" placeholder="Description du besoin, dimensions, puissance, délai..."></textarea>
+<button class="primary" type="submit">Enregistrer la demande</button><div id="status"></div></form></div>
+<div id="leads" class="panel"><h2>Prospects</h2><button class="primary" onclick="csv()">⬇ Exporter CSV</button> <button onclick="clearAll()">Supprimer</button><div id="list"></div></div>
+</section>
+<aside class="card side"><h2>Services</h2>
+<div class="service"><b>💡 Éclairage routier</b><br>Étude, implantation, LED, DIALux.</div>
+<div class="service"><b>⚓ Éclairage portuaire</b><br>Quais, mâts, projecteurs.</div>
+<div class="service"><b>☀️ Solaire</b><br>Dimensionnement et autonomie.</div>
+<div class="service"><b>⚡ TGBT</b><br>Bilan, protections, départs.</div>
+<div class="service"><b>📐 Schémas</b><br>Unifilaire et multifilaire.</div>
+<div class="service"><b>📑 CCTP/BPU/DQE</b><br>Dossiers techniques et estimatifs.</div>
+</aside></div></div>
+<script>
+const KEY="freelance_leads_v4";let leads=JSON.parse(localStorage.getItem(KEY)||"[]");
+const M=document.getElementById("messages"),Q=document.getElementById("quick"),I=document.getElementById("input");
+function add(t,u=false){let d=document.createElement("div");d.className="msg "+(u?"user":"bot");let b=document.createElement("div");b.className="bubble";b.textContent=t;d.appendChild(b);M.appendChild(d);M.scrollTop=M.scrollHeight}
+function buttons(a){Q.innerHTML="";a.forEach(x=>{let b=document.createElement("button");b.textContent=x;b.onclick=()=>{I.value=x;send()};Q.appendChild(b)})}
+function panel(id){document.querySelectorAll(".panel").forEach(x=>x.classList.remove("active"));document.getElementById(id).classList.add("active");if(id==="leads")render()}
+function reply(q){let s=q.toLowerCase();
+if(s.includes("devis")||s.includes("prix")||s.includes("coût")){panel("quote");return "Je vous invite à remplir le formulaire de demande de devis. Indiquez les informations que vous connaissez."; }
+if(s.includes("routier")||s.includes("route"))return "Pour l’éclairage routier : longueur, largeur, niveau de lux, espacement des mâts et alimentation permettent de dimensionner l’installation. Je peux aussi préparer CCTP/BPU/DQE.";
+if(s.includes("port"))return "Pour l’éclairage portuaire : quais, terre-pleins, mâts, projecteurs LED, TGBT et protections peuvent être étudiés.";
+if(s.includes("solaire"))return "Pour le solaire : puissance de charge, durée de fonctionnement et autonomie souhaitée servent au dimensionnement des panneaux et batteries.";
+if(s.includes("tgbt")||s.includes("distribution"))return "Pour un TGBT : puissance disponible, bilan des charges et liste des départs permettent de définir protections, câbles et schéma unifilaire.";
+if(s.includes("schéma")||s.includes("schema"))return "Je peux préparer un schéma unifilaire ou multifilaire. Donnez les équipements, puissances et départs.";
+if(s.includes("cctp")||s.includes("bpu")||s.includes("dqe"))return "Je peux préparer CCTP, BPU et DQE détaillés avec quantités, définitions et estimation.";
+return "Je peux vous aider pour l’éclairage routier, l’éclairage portuaire, le solaire, le TGBT, les schémas électriques ou les dossiers CCTP/BPU/DQE. Quel est votre projet ?"}
+function send(){let q=I.value.trim();if(!q)return;add(q,true);I.value="";setTimeout(()=>add(reply(q)),120)}
+I.addEventListener("keydown",e=>{if(e.key==="Enter")send()});
+document.getElementById("form").onsubmit=e=>{e.preventDefault();let x={date:new Date().toLocaleString("fr-FR"),name:name.value,email:email.value,phone:phone.value,project:project.value,location:location.value,details:details.value};leads.push(x);localStorage.setItem(KEY,JSON.stringify(leads));status.textContent="✓ Demande enregistrée sur cet appareil.";e.target.reset()};
+function render(){list.innerHTML=leads.length?leads.slice().reverse().map(x=>"<p><b>"+esc(x.name)+"</b> — "+esc(x.project)+"<br>"+esc(x.email)+" • "+esc(x.phone)+"<br>"+esc(x.location)+"<br>"+esc(x.details)+"</p>").join(""):"<p>Aucun prospect.</p>"}
+function esc(x){return String(x||"").replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]))}
+function csv(){if(!leads.length)return alert("Aucun prospect.");let r=[["Date","Nom","Email","Téléphone","Projet","Localisation","Détails"],...leads.map(x=>Object.values(x))];let c=r.map(a=>a.map(v=>'"'+String(v||"").replaceAll('"','""')+'"').join(";")).join("\n"),b=new Blob(["\ufeff"+c],{type:"text/csv"}),a=document.createElement("a");a.href=URL.createObjectURL(b);a.download="prospects.csv";a.click()}
+function clearAll(){if(confirm("Supprimer tous les prospects ?")){leads=[];localStorage.removeItem(KEY);render()}}
+add("Bonjour ! Je suis l’assistant de votre activité freelance en études électriques. Je peux orienter vos clients vers une étude, un devis ou un dossier technique. Quel est votre besoin ?");
+buttons(["Éclairage routier","Éclairage portuaire","Installation solaire","TGBT / distribution","Schéma électrique","CCTP / BPU / DQE","Demander un devis"]);
+</script></body></html>

@@ -1,0 +1,3 @@
+Nom : Chatbot Freelance
+Services : éclairage routier, portuaire, solaire, TGBT, schémas, CCTP/BPU/DQE
+Déploiement : GitHub Pages
